@@ -1,0 +1,19 @@
+.reveal code {
+  background-color: rgb(61,61,61);
+  padding-left: 5px;
+  padding-right: 5px;
+  border: rgb(95,95,95) solid 0.5px;
+}
+
+.reveal pre code {
+  border: none;
+}
+
+.reveal blockquote::before, .reveal blockquote::after {
+  content: initial;
+}
+
+.reveal code, .reveal pre code {
+    font-family: 'FiraCode', monospace;
+    font-feature-settings: "liga" 0;
+}
