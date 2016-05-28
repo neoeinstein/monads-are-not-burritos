@@ -14,7 +14,7 @@
     <script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/reveal.css">
-    <link rel="stylesheet" href="css/theme/League.css" id="theme">
+    <link rel="stylesheet" href="css/theme/league.css" id="theme">
     <link type="text/css" rel="stylesheet" href="fsharp.formatting/styles/style.css" />
     <link type="text/css" rel="stylesheet" href="fsharp.formatting/styles/deedle.css" />
     <link type="text/css" rel="stylesheet" href="css/custom.css" />
@@ -35,14 +35,6 @@
     <!--[if lt IE 9]>
     <script src="lib/js/html5shiv.js"></script>
     <![endif]-->
-    <script language="javascript" type="text/javascript">
-        function init()
-        {
-            websocket = new WebSocket("ws://"+window.location.host+"/websocket");
-            websocket.onmessage = function(evt) { location.reload(); };
-        }
-        window.addEventListener("load", init, false);
-    </script>
 </head>
 <body>
     <div class="reveal">
