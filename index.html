@@ -1,0 +1,319 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Monads are not Burritos</title>
+    <meta name="description" content="Explaining monads to the uninitiated">
+    <meta name="author" content="Marcus Griep">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <script src="//code.jquery.com/jquery-1.8.0.js"></script>
+    <script src="//code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
+    <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/reveal.css">
+    <link rel="stylesheet" href="css/theme/League.css" id="theme">
+    <link type="text/css" rel="stylesheet" href="fsharp.formatting/styles/style.css" />
+    <link type="text/css" rel="stylesheet" href="fsharp.formatting/styles/deedle.css" />
+    <link type="text/css" rel="stylesheet" href="css/custom.css" />
+    <script src="fsharp.formatting/styles/tips.js" type="text/javascript"></script>
+    <!-- For syntax highlighting -->
+    <link rel="stylesheet" href="lib/css/zenburn.css">
+    <link rel="stylesheet" href="css/fsreveal.css">
+    <!-- If the query includes 'print-pdf', include the PDF print sheet -->
+    <script>
+			if( window.location.search.match( /print-pdf/gi ) ) {
+				var link = document.createElement( 'link' );
+				link.rel = 'stylesheet';
+				link.type = 'text/css';
+				link.href = 'css/print/pdf.css';
+				document.getElementsByTagName( 'head' )[0].appendChild( link );
+			}
+    </script>
+    <!--[if lt IE 9]>
+    <script src="lib/js/html5shiv.js"></script>
+    <![endif]-->
+    <script language="javascript" type="text/javascript">
+        function init()
+        {
+            websocket = new WebSocket("ws://"+window.location.host+"/websocket");
+            websocket.onmessage = function(evt) { location.reload(); };
+        }
+        window.addEventListener("load", init, false);
+    </script>
+</head>
+<body>
+    <div class="reveal">
+        <div class="tip" id="fs1">module String<br /><br />from Microsoft.FSharp.Core</div>
+
+        <!-- Any section element inside of this container is displayed as a slide -->
+        <div class="slides">
+            <section >
+<h1>Monads are not Burritos</h1>
+<h2>Explaining monads to the uninitiated</h2>
+<p><div>
+Marcus Griep<br/>
+<a href="https://twitter.com/neoeinstein">@neoeinstein</a>
+</div></p>
+<aside class="notes">
+So, we've all had it happen. We've been going along having a lot of fun<br/>
+playing around with functional languages. We've learned all sorts of new<br/>
+concepts. Maybe we've even gotten a few things working Haskell. Suddenly,<br/>
+</aside>
+</section>
+<section >
+<img src="images/dodge_challenger_appears.gif" class="stretch" alt="A Challenger Appears"/>
+<aside class="notes">
+your friend, co-worker, or partner asks you about this functional programming<br/>
+thing that you've been doing. So, you quickly pull up your latest project and<br/>
+</aside>
+</section>
+<section >
+<section >
+<img src="images/let_me_show_you.jpg" class="stretch" alt="Let me show you how to penguin"/>
+<aside class="notes">
+start to show them all of the cool things that you've been learning. You point<br/>
+out all the major selling points of functional languages: immutability, freedom<br/>
+from side-effects, and how you're able to leverage these properties to reason about<br/>
+larger programs composed of smaller parts.<br/>
+</aside>
+</section>
+<section >
+<img src="images/this-is-amazing.gif" class="stretch" alt="This is amazing!"/>
+<aside class="notes">
+You're showing them this beautiful world.<br/>
+</aside>
+</section>
+<section >
+<div style="font-size:300%">
+<div class="fragment">
+<code>>>=</code>
+</div>
+<div style="margin-top:1em;margin-bottom:1em" class="fragment">
+<code>Option.bind</code>
+</div>
+<div class="fragment">
+<code>m-bind</code>
+</div>
+</div>
+<aside class="notes">
+Then you stumble across a bind operator<br/>
+</aside>
+</section>
+<section >
+<div style="font-size:300%">
+<div class="fragment">
+<code>do</code> & <code><-</code>
+</div>
+<div style="margin-top:1em;margin-bottom:1em" class="fragment">
+<code>maybe {}</code> & <code>let!</code>
+</div>
+<div class="fragment">
+<code>domonad</code>
+</div>
+</div>
+<aside class="notes">
+Or, more likely you come across some syntactic sugar provided by the<br/>
+language you're using, and your friend wonders "What's that?"<br/>
+</aside>
+</section>
+</section>
+<section >
+<section >
+<pre>
+<pre style="font-size:150%">
+Your friend asks "What does that do?"
+</pre>
+<pre style="font-size:150%" class="fragment">
+Your choices:
+    1. Oh, that's the Maybe monad!
+</pre>
+<pre style="font-size:150%" class="fragment">
+Your answer: <span class="fragment">1</span>
+</pre>
+</pre>
+<aside class="notes">
+All too often we are equipped with only one answer.<br/>
+</aside>
+</section>
+<section >
+<img src="images/what-is-monad.jpg" class="stretch" alt="So what is a monad?" />
+<aside class="notes">
+The reply: What's a monad?<br/>
+Congratulations, you've already lost them. Your attempts to reel them back in<br/>
+with casual mentions of category theory will certainly be entertaining. You<br/>
+might even try to explain that a monad is a container, a wrapper, or a burrito.<br/>
+</aside>
+</section>
+<section >
+<h1>Game Over</h1>
+<aside class="notes">
+But, none of this will persuade them that they understand you.<br/>
+At this point throwing "A monad is a monoid in the category of endofunctors"<br/>
+on to the fire probably won't do any more harm.<br/>
+Ok. so that didn't go so great. Let's go back and see if there are any other<br/>
+options.<br/>
+</aside>
+</section>
+</section>
+<section >
+<section >
+<pre>
+<pre style="font-size:150%">
+Your friend asks "What does that do?"
+</pre>
+<pre style="font-size:150%">
+Your choices:
+    1. Oh, that's the Maybe monad!
+<span class="fragment">    2. It chains together two functions
+       that may or may not produce
+       a value.</span>
+</pre>
+<pre style="font-size:150%">
+Your answer: <span class="fragment">2</span>
+</pre>
+</pre>
+<aside class="notes">
+From here, your friend is probably responding with an uncertain "oh..."<br/>
+But now, you can continue. "Here, let me show you.<br/>
+</aside>
+</section>
+<section >
+<img src="images/Recipe_RailwaySwitch1.png" class="stretch" alt="Two functions represented as railway tracks"/>
+<aside class="notes">
+See, these two functions both take a value and return a maybe. Remember how<br/>
+I mentioned that Maybe is a type that holds either Just a value or Nothing?<br/>
+We want to chain these functions together, but if the first function produces<br/>
+Nothing, then there is no good value to feed into the second function. Instead<br/>
+we want it to pass along the Nothing. If the first function did produce a value,<br/>
+though, we want to pass that result into the second function."<br/>
+(Images sourced from fsharpforfunandprofit.com)<br/>
+</aside>
+</section>
+<section >
+<img src="images/Recipe_RailwaySwitch2.png" class="stretch" alt="Two functions composed together as railway tracks"/>
+<aside class="notes">
+"The bind operation is the glue which chains these two operations together.<br/>
+We can also do something similar with Either (Result/Choice)."<br/>
+Now the conversation is going somewhere productive, and you haven't even mentioned<br/>
+monads, applicatives, or functors. It is inevitable that they will be exposed to<br/>
+these concepts, but if properly framed, we can accelerate their ability to<br/>
+wrap their heads around them.<br/>
+</aside>
+</section>
+<section >
+<h3>Monad and Applicative in Elm</h3>
+<p>Monadic <code>bind</code> / <code>&gt;&gt;=</code></p>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="i">postTime</span> <span class="o">:</span> (<span class="i">Time</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">String</span>) <span class="k">-&gt;</span> <span class="i">Task</span> <span class="i">Http</span><span class="o">.</span><span class="i">Error</span> <span onmouseout="hideTip(event, 'fs1', 2)" onmouseover="showTip(event, 'fs1', 2)" class="i">String</span>
+<span class="i">postTime</span> <span class="i">resourceUrl</span> <span class="o">=</span>
+  <span class="i">Time</span><span class="o">.</span><span class="i">now</span> <span class="k">`</span><span class="i">Task</span><span class="o">.</span><span class="i">andThen</span><span class="k">`</span> (<span class="i">resourceUrl</span> <span class="o">&gt;</span><span class="o">&gt;</span> <span class="i">Http</span><span class="o">.</span><span class="i">getString</span>)
+</code></pre></td>
+</tr>
+</table>
+<p>Applicative <code>apply</code> / <code>&lt;*&gt;</code></p>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="i">tryMkPerson</span> <span class="o">:</span> <span class="i">Maybe</span> <span onmouseout="hideTip(event, 'fs1', 3)" onmouseover="showTip(event, 'fs1', 3)" class="i">String</span> <span class="k">-&gt;</span> <span class="i">Maybe</span> <span class="i">Int</span> <span class="k">-&gt;</span> <span class="i">Maybe</span> <span class="i">Person</span>
+<span class="i">tryMkPerson</span> <span class="i">name</span> <span class="i">age</span> <span class="o">=</span>
+  <span class="i">Person</span> <span class="k">`</span><span class="i">Maybe</span><span class="o">.</span><span class="i">map</span><span class="k">`</span> <span class="i">name</span> <span class="k">`</span><span class="i">Maybe</span><span class="o">.</span><span class="i">andMap</span><span class="k">`</span> <span class="i">age</span>
+</code></pre></td>
+</tr>
+</table>
+<aside class="notes">
+Elm, is a pure, functional language that transpiles to Javascript. Its target audience is<br/>
+developers who are moving over from a highly imperative world and who have no prior exposure<br/>
+to many of these functional concepts. Starting from that point, Elm explicitly avoids using<br/>
+the names `bind` and `apply`, instead preferring to use `andThen` and `andMap`. And, while<br/>
+you will find the words Monad and Applicative in the documentation, those terms are merely<br/>
+pointed out as "the patterns that more experienced functional programmers will know by another<br/>
+name.<br/>
+</aside>
+</section>
+</section>
+<section >
+<section >
+<dl>
+<dt class="fragment" data-fragment-index="1">Reader</dt>
+<dd class="fragment" data-fragment-index="2"><span class="fragment highlight-blue" data-fragment-index="7">Chains</span> an argument or environment <span class="fragment highlight-blue" data-fragment-index="7">through a computation to produce a value</span></dd>
+<dt class="fragment" data-fragment-index="3">State</dt>
+<dd class="fragment" data-fragment-index="4">Mimics mutation by <span class="fragment highlight-blue" data-fragment-index="7">threading</span> a state <span class="fragment highlight-blue" data-fragment-index="7">through a computation to produce a value</span></dd>
+<dt class="fragment" data-fragment-index="5">IO</dt>
+<dd class="fragment" data-fragment-index="6"><span class="fragment highlight-blue" data-fragment-index="7">Chains</span> together the intent to perform certain effects as <span class="fragment highlight-blue" data-fragment-index="7">part of a computation to produce a value</span>, delaying the effects until they are later executed</dd>
+</dl>
+<div class="fragment" data-fragment-index="8" style="font-size:150%"><em>Monad is the pattern</em></div>
+<aside class="notes">
+As you go along and explain types like Reader, State, and IO, point out<br/>
+the similar patterns for how you interact with them. Humans are much better<br/>
+at starting from concrete examples and generalizing to abstract concepts<br/>
+than going the other way around. Even the Haskellbook waits until 750 pages<br/>
+into Haskell before tackling Monads and that is only after it has laid down<br/>
+layers of foundation and subtle exposure to monads.<br/>
+</aside>
+</section>
+<section >
+<h2>So what is a monad?</h2>
+<div class="fragment">
+<blockquote>
+<p>A monad is a structure that defines how to chain its operations together
+so that those operations compose sanely.</p>
+</blockquote>
+</div>
+</section>
+</section>
+<section >
+<h2>Three easy steps</h2>
+<ol>
+<li class="fragment">Don't start with "Oh! That's a monad!"</li>
+<li class="fragment">Focus on explaining concrete examples</li>
+<li class="fragment">Name the pattern as it emerges</li>
+</ol>
+<aside class="notes">
+Remember, you didn't start explaining lists by saying "Oh, that's the list monad!"<br/>
+</section>
+
+
+        </div>
+    </div>
+    <script src="lib/js/head.min.js"></script>
+    <script src="js/reveal.js"></script>
+    <script>
+        // Add the nohighlight class and data-noescape attribute to code elements that have already been formatted by FSharp.Formatting
+        $('pre.highlighted code').addClass('nohighlight').attr('data-noescape', '');
+
+        // Full list of configuration options available here:
+        // https://github.com/hakimel/reveal.js#configuration
+        Reveal.initialize({
+            controls: true,
+            progress: true,
+            history: true,
+            center: true,
+
+            transition: 'default', // default/cube/page/concave/zoom/linear/fade/none
+
+            // Parallax scrolling
+            // parallaxBackgroundImage: 'https://s3.amazonaws.com/hakim-static/reveal-js/reveal-parallax-1.jpg',
+            // parallaxBackgroundSize: '2100px 900px',
+
+            // Optional libraries used to extend on reveal.js
+            dependencies: [
+                { src: 'lib/js/classList.js', condition: function () { return !document.body.classList; } },
+                { src: 'plugin/markdown/marked.js', condition: function () { return !!document.querySelector('[data-markdown]'); } },
+                { src: 'plugin/markdown/markdown.js', condition: function () { return !!document.querySelector('[data-markdown]'); } },
+                { src: 'plugin/highlight/highlight.js', async: true, callback: function () { hljs.initHighlightingOnLoad(); } },
+                { src: 'plugin/zoom-js/zoom.js', async: true, condition: function () { return !!document.body.classList; } },
+                { src: 'plugin/notes/notes.js', async: true, condition: function () { return !!document.body.classList; } }
+            ]
+        });
+
+    </script>
+</body>
+</html>
+
